@@ -1,3 +1,8 @@
+# generates random net NxN of integers from 0 to 10 and calculates the most efficient path
+# to walk from left edge to right edge (marked with #) with penalty for each visited integer equal to it's value.
+
+import random
+
 import numpy as np
 
 
@@ -13,6 +18,13 @@ class Cell:
 
 
 def get_path(my_cell_matrix, i, j):
+    """
+    Trace back full path from end to start cell
+    :param my_cell_matrix: N by N nested list of Cell objects
+    :param i: i of last cell
+    :param j: j of last cell
+    :return: [[i, j], ]
+    """
     i_curr, j_curr = i, j
     i_next = i_curr
     path = [[i_curr, j_curr]]
@@ -27,8 +39,8 @@ def get_path(my_cell_matrix, i, j):
 def check_queue(my_cell_matrix):
     """
     Find out first element of queue based on known costs
-    :param my_cell_matrix:
-    :return:
+    :param my_cell_matrix: N by N nested list of Cell objects
+    :return: {'cost': None, 'x': None, 'y': None}
     """
     top_queue = {'cost': None, 'x': None, 'y': None}
     for _i in range(len(my_cell_matrix)):
@@ -48,15 +60,19 @@ def check_queue(my_cell_matrix):
     return top_queue
 
 
-def find_path(layout, N):
-    field = np.array(layout)
+# main part is a Dijkstra algorithm
+def find_path(layout_):
+    """
+    Dijkstra algorithm
+    :param layout_: N_ by N_ nested list
+    :return: {'cost': , 'path': ''}
+    """
+    field = np.array(layout_)
     field = field.transpose()
-
-    # main part is a Dijkstra algorithm
-    result = {'cost': None, 'path': ''}
-    for j_stop in range(N):
-        for j_start in range(N):
-            cell_matrix = [[Cell() for i in range(N)] for x in range(N)]
+    result_ = {'cost': None, 'path': ''}
+    for j_stop in range(len(layout_)):
+        for j_start in range(len(layout_)):
+            cell_matrix = [[Cell() for i in range(len(layout_))] for x in range(len(layout_))]
             # starting point
             i, j = 0, j_start
             cell_matrix[i][j].cost = field[i][j]
@@ -78,20 +94,20 @@ def find_path(layout, N):
                 else:
                     break
             my_path = get_path(cell_matrix, i, j)
-            if result['cost'] is None or cell_matrix[i][j].cost < result['cost']:
-                result['cost'] = cell_matrix[i][j].cost
-                result['path'] = my_path
-    return result
+            if result_['cost'] is None or cell_matrix[i][j].cost < result_['cost']:
+                result_['cost'] = cell_matrix[i][j].cost
+                result_['path'] = my_path
+    return result_
 
-
-# N = 3
-# layout = [[1, 20, 33], [33, 1, 22], [29, 3, 81]]
 
 N = 5
-layout = [[1, 1, 9, 1, 1], [3, 1, 9, 7, 1], [4, 1, 9, 1, 1], [5, 1, 1, 1, 5], [6, 1, 9, 3, 1]]
+layout = [[None for i in range(N)] for x in range(N)]
+for i in range(N):
+    for j in range(N):
+        layout[i][j] = random.randint(0, 10)
 
 # get the result
-result = find_path(layout, N)
+result = find_path(layout)
 
 # mark path with stars
 for i in result['path']:
