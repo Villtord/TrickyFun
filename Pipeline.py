@@ -113,11 +113,14 @@ result = find_path(layout)
 for i in result['path']:
     layout[i[1]][i[0]] = '#' + str(layout[i[1]][i[0]])
 
-# add spaces to the rest of values
+# make some pretty printing of path
 for i in range(len(layout)):
     for j in range(len(layout[i])):
         if str(layout[i][j])[0] != '#':
-            layout[i][j] = ' ' + str(layout[i][j])
+            if len(str(layout[i][j])) == 1:
+                layout[i][j] = ' ' + str(layout[i][j])
+            else:
+                layout[i][j] = str(layout[i][j])
     print(layout[i])
 # print final cost
 print(f'Optimal cost: {result["cost"]}')
